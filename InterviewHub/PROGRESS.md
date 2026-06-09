@@ -13,12 +13,18 @@ This document tracks the tasks completed, ongoing work, and upcoming goals for t
   - Established standardized `ApiResponse` and Global Exception Handling.
   - Set up temporary `SecurityConfig` to bypass auth for testing.
   - Implemented the full CRUD API for the `Role` entity (Controller, Service, Repository, DTOs).
+- **Implemented User CRUD Feature & Pagination:**
+  - Added a generic `PaginationDTO` for returning paginated responses.
+  - Set up `BCryptPasswordEncoder` in `SecurityConfig`.
+  - Implemented `User` entity with a `@ManyToOne` relationship to `Role`.
+  - Built the `User` CRUD APIs, including paginated `getAllUsers`.
 
 ## ⏳ Upcoming Tasks (To-Do)
 
 - [x] Set up global exception handling and standardized `ApiResponse`.
 - [x] Implement the `Role` CRUD feature and base Security config.
-- [ ] Build the `auth` module (User entity, registration, login, JWT issuance).
+- [x] Build the `auth` module user foundation (User entity, CRUD, pagination).
+- [ ] Build the `auth` module endpoints (registration, login, JWT issuance).
 - [ ] Set up the remaining database schema and entities based on `DATABASE.md` (Categories, Questions).
 - [ ] Implement Topic / Category Management.
 - [ ] Implement Question Management (CRUD, markdown support).
