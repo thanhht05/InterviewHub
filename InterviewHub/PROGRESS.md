@@ -18,13 +18,21 @@ This document tracks the tasks completed, ongoing work, and upcoming goals for t
   - Set up `BCryptPasswordEncoder` in `SecurityConfig`.
   - Implemented `User` entity with a `@ManyToOne` relationship to `Role`.
   - Built the `User` CRUD APIs, including paginated `getAllUsers`.
+### [2026-06-09]
+- **Implemented JWT Authentication & Authorization:**
+  - Configured `jjwt` dependencies and added JWT secret/expiration to `application.properties`.
+  - Added `refreshToken` support to the `User` entity and implemented `UserDetails`.
+  - Created `JwtService` and `JwtAuthenticationFilter` for token generation and verification.
+  - Added `/register` and `/login` endpoints in `AuthController` along with the corresponding service and DTOs.
+  - Updated `SecurityConfig` and `ApplicationConfig` to wire up Spring Security authentication beans.
+  - Added `/account` endpoint in `AuthController` to retrieve the currently authenticated user's details for the frontend.
 
 ## ⏳ Upcoming Tasks (To-Do)
 
 - [x] Set up global exception handling and standardized `ApiResponse`.
 - [x] Implement the `Role` CRUD feature and base Security config.
 - [x] Build the `auth` module user foundation (User entity, CRUD, pagination).
-- [ ] Build the `auth` module endpoints (registration, login, JWT issuance).
+- [x] Build the `auth` module endpoints (registration, login, JWT issuance).
 - [ ] Set up the remaining database schema and entities based on `DATABASE.md` (Categories, Questions).
 - [ ] Implement Topic / Category Management.
 - [ ] Implement Question Management (CRUD, markdown support).
