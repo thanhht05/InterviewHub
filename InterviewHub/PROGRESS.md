@@ -26,6 +26,9 @@ This document tracks the tasks completed, ongoing work, and upcoming goals for t
   - Added `/register` and `/login` endpoints in `AuthController` along with the corresponding service and DTOs.
   - Updated `SecurityConfig` and `ApplicationConfig` to wire up Spring Security authentication beans.
   - Added `/account` endpoint in `AuthController` to retrieve the currently authenticated user's details for the frontend.
+  - Implemented `Category` CRUD feature (Entity, Repository, Service, Controller, DTOs).
+  - Implemented `Question` CRUD feature with Category relationship, DifficultyLevel enum, and pagination support.
+  - Implemented User Progress Tracking (`user_question` relationship) to allow users to mark questions as `LEARNING`, `REVIEW`, or `MASTERED`.
 
 ## ⏳ Upcoming Tasks (To-Do)
 
@@ -33,9 +36,10 @@ This document tracks the tasks completed, ongoing work, and upcoming goals for t
 - [x] Implement the `Role` CRUD feature and base Security config.
 - [x] Build the `auth` module user foundation (User entity, CRUD, pagination).
 - [x] Build the `auth` module endpoints (registration, login, JWT issuance).
-- [ ] Set up the remaining database schema and entities based on `DATABASE.md` (Categories, Questions).
-- [ ] Implement Topic / Category Management.
-- [ ] Implement Question Management (CRUD, markdown support).
+- [x] Set up the remaining database schema and entities based on `DATABASE.md` (Categories, Questions).
+- [x] Implement Topic / Category Management.
+- [x] Implement Question Management (CRUD, markdown support).
+- [x] Implement User Progress Tracking (`user_question` many-to-many relationship).
 
 ---
 *Note: This file will be updated as new features are implemented, bugs are fixed, or project configurations are modified.*

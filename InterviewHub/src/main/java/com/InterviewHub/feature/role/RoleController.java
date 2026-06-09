@@ -7,6 +7,7 @@ import com.InterviewHub.feature.role.dto.UpdateRoleRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class RoleController {
         this.roleService = roleService;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<ApiResponse<RoleResponse>> createRole(@RequestBody @Valid CreateRoleRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -37,6 +39,7 @@ public class RoleController {
         return ResponseEntity.ok(ApiResponse.success(roleService.getAllRoles()));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<RoleResponse>> updateRole(
             @PathVariable Long id,
@@ -44,6 +47,7 @@ public class RoleController {
         return ResponseEntity.ok(ApiResponse.success(roleService.updateRole(id, request)));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteRole(@PathVariable Long id) {
         roleService.deleteRole(id);

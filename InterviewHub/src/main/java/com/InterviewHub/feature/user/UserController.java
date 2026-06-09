@@ -8,6 +8,7 @@ import com.InterviewHub.feature.user.dto.UserResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -31,6 +32,7 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.success(userService.getUserById(id)));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<ApiResponse<PaginationDTO<UserResponse>>> getAllUsers(
             @RequestParam(defaultValue = "0") int page,
@@ -45,6 +47,7 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.success(userService.updateUser(id, request)));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
