@@ -1,7 +1,7 @@
 import React from 'react';
 import { Layout, Menu, theme } from 'antd';
 import { Outlet, useNavigate } from 'react-router-dom';
-import { UserOutlined } from '@ant-design/icons';
+import { UserOutlined, AppstoreOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -21,7 +21,11 @@ const AdminLayout = () => {
           theme="dark"
           mode="inline"
           defaultSelectedKeys={['1']}
-          items={[{ key: '1', icon: <UserOutlined />, label: 'User Management', onClick: () => navigate('/admin/users') }]}
+          items={[
+            { key: '1', icon: <UserOutlined />, label: 'User Management', onClick: () => navigate('/admin/users') },
+            { key: '2', icon: <AppstoreOutlined />, label: 'Category Management', onClick: () => navigate('/admin/categories') },
+            { key: '3', icon: <QuestionCircleOutlined />, label: 'Question Management', onClick: () => navigate('/admin/questions') }
+          ]}
         />
       </Sider>
       <Layout>

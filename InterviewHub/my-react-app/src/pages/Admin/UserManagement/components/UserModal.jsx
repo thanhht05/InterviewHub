@@ -6,7 +6,6 @@ const { Option } = Select;
 const UserModal = ({ visible, onClose, onSubmit, initialValues }) => {
   const [form] = Form.useForm();
 
-  console.log("intit values", initialValues)
 
   useEffect(() => {
     if (visible) {

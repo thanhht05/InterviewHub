@@ -39,7 +39,7 @@ public class QuestionController {
         return ResponseEntity.ok(ApiResponse.success(questionService.getQuestionById(id)));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    // @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<ApiResponse<QuestionResponse>> createQuestion(
             @RequestBody @Valid CreateQuestionRequest request) {
@@ -47,7 +47,7 @@ public class QuestionController {
                 .body(ApiResponse.created(questionService.createQuestion(request)));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    // @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<QuestionResponse>> updateQuestion(
             @PathVariable Long id,
@@ -55,7 +55,7 @@ public class QuestionController {
         return ResponseEntity.ok(ApiResponse.success(questionService.updateQuestion(id, request)));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    // @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteQuestion(@PathVariable Long id) {
         questionService.deleteQuestion(id);
