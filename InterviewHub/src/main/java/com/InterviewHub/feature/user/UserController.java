@@ -32,11 +32,10 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.success(userService.getUserById(id)));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<ApiResponse<PaginationDTO<UserResponse>>> getAllUsers(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "1") int size) {
         return ResponseEntity.ok(ApiResponse.success(userService.getAllUsers(page, size)));
     }
 
@@ -47,7 +46,7 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.success(userService.updateUser(id, request)));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    // @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
