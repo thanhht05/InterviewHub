@@ -54,7 +54,7 @@ body {
   margin: 0;
 }
 
-#root {
+/* #root {
   padding: 10px;
   text-align: center;
   border-inline: 1px solid var(--border);
@@ -62,7 +62,7 @@ body {
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-}
+} */
 
 h1,
 h2 {
@@ -111,3 +111,19 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 }
+
+/* 
+.w-md-editor-text-pre,
+.w-md-editor-text-input {
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+}
+
+.w-md-editor-preview pre {
+  padding: 16px;
+  overflow-x: auto;
+}
+
+.w-md-editor-preview code {
+  white-space: pre-wrap;
+} */

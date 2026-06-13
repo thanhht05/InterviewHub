@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Typography, Spin, message, Button, Tag, Empty, theme } from 'antd';
 import { ArrowLeftOutlined, EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
-import MDEditor from '@uiw/react-md-editor';
+import MarkdownEditor from '@uiw/react-markdown-editor';
+
 import { questionService } from '../../../services/questionService';
 import { useThemeContext } from '../../../contexts/ThemeContext';
 
@@ -102,11 +103,19 @@ const QuestionDetailPage = () => {
 
       {/* Answer Section */}
       {showAnswer && (
-        <div style={{ animation: 'fadeIn 0.5s ease-in-out' }}>
-          <Title level={4} style={{ color: token.colorText, marginBottom: '16px' }}>Answer</Title>
-          <div data-color-mode={isDarkMode ? 'dark' : 'light'} style={{ border: `1px solid ${token.colorBorderSecondary}`, padding: '24px', borderRadius: '8px', background: token.colorBgContainer }}>
-            <MDEditor.Markdown source={question.answerMarkdown || '*No answer provided.*'} />
-          </div>
+        <div
+          data-color-mode={isDarkMode ? 'dark' : 'light'}
+          className="markdown-preview"
+          style={{
+            border: `1px solid ${token.colorBorderSecondary}`,
+            padding: '24px',
+            borderRadius: '8px',
+            background: token.colorBgContainer
+          }}
+        >
+          <MarkdownEditor.Markdown
+            source={question.answerMarkdown || '*No answer provided.*'}
+          />
         </div>
       )}
 

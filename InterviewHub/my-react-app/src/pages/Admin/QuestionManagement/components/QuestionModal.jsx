@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Modal, Form, Input, Select, message } from 'antd';
-import MDEditor from '@uiw/react-md-editor';
+
 import { categoryService } from '../../../../services/categoryService';
+import MarkdownEditor from '@uiw/react-markdown-editor';
 
 const { Option } = Select;
 
@@ -112,8 +113,8 @@ const QuestionModal = ({ visible, onClose, onSubmit, initialValues }) => {
           label="Answer (Markdown)"
           required
         >
-          <div data-color-mode="black">
-            <MDEditor
+          <div >
+            <MarkdownEditor
               value={answerMarkdown}
               onChange={setAnswerMarkdown}
               height={300}
