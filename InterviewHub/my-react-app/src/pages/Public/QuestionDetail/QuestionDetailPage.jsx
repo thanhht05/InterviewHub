@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Typography, Spin, message, Button, Tag, Empty, theme } from 'antd';
-import { ArrowLeftOutlined, EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
+import { Typography, Spin, message, Button, Tag, Empty, theme, Space } from 'antd';
+import { ArrowLeftOutlined, EyeOutlined, EyeInvisibleOutlined, CheckCircleOutlined, CheckOutlined } from '@ant-design/icons';
 import MarkdownEditor from '@uiw/react-markdown-editor';
+import { useSelector } from 'react-redux';
 
 import { questionService } from '../../../services/questionService';
+import { progressService } from '../../../services/progressService';
 import { useThemeContext } from '../../../contexts/ThemeContext';
 
 const { Title, Paragraph } = Typography;
@@ -15,13 +17,51 @@ const QuestionDetailPage = () => {
   const { isDarkMode } = useThemeContext();
   const { token } = theme.useToken();
 
+  const { isAuthenticated } = useSelector((state) => state.auth);
+
   const [question, setQuestion] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showAnswer, setShowAnswer] = useState(false);
+  const [progressStatus, setProgressStatus] = useState(null);
+  const [markingProgress, setMarkingProgress] = useState(false);
 
   useEffect(() => {
     fetchQuestion();
-  }, [id]);
+    if (isAuthenticated) {
+      fetchProgress();
+    }
+  }, [id, isAuthenticated]);
+
+  const fetchProgress = async () => {
+    try {
+      const response = await progressService.getQuestionProgress(id);
+      if (response.data?.data) {
+        setProgressStatus(response.data.data.status);
+      }
+    } catch (error) {
+      console.error('Failed to fetch progress:', error);
+    }
+  };
+
+  const handleMarkAsLearned = async () => {
+    if (!isAuthenticated) {
+      message.info('Please log in to track your learning progress.');
+      navigate('/login');
+      return;
+    }
+    
+    setMarkingProgress(true);
+    try {
+      await progressService.markQuestionStatus({ questionId: id, status: 'MASTERED' });
+      setProgressStatus('MASTERED');
+      message.success('Question marked as learned!');
+    } catch (error) {
+      console.error('Failed to mark as learned:', error);
+      message.error('Failed to update progress.');
+    } finally {
+      setMarkingProgress(false);
+    }
+  };
 
   const fetchQuestion = async () => {
     setLoading(true);
@@ -91,14 +131,28 @@ const QuestionDetailPage = () => {
 
       {/* Action Area */}
       <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-        <Button
-          type="primary"
-          size="large"
-          icon={showAnswer ? <EyeInvisibleOutlined /> : <EyeOutlined />}
-          onClick={() => setShowAnswer(!showAnswer)}
-        >
-          {showAnswer ? 'Hide Answer' : 'Show Answer'}
-        </Button>
+        <Space size="large">
+          <Button
+            type="primary"
+            size="large"
+            icon={showAnswer ? <EyeInvisibleOutlined /> : <EyeOutlined />}
+            onClick={() => setShowAnswer(!showAnswer)}
+          >
+            {showAnswer ? 'Hide Answer' : 'Show Answer'}
+          </Button>
+          
+          <Button
+            type={progressStatus === 'MASTERED' ? 'default' : 'primary'}
+            size="large"
+            icon={progressStatus === 'MASTERED' ? <CheckCircleOutlined style={{ color: '#52c41a' }} /> : <CheckOutlined />}
+            onClick={handleMarkAsLearned}
+            loading={markingProgress}
+            disabled={progressStatus === 'MASTERED'}
+            style={progressStatus === 'MASTERED' ? { borderColor: '#52c41a', color: '#52c41a' } : { background: '#52c41a' }}
+          >
+            {progressStatus === 'MASTERED' ? 'Learned' : 'Mark as Learned'}
+          </Button>
+        </Space>
       </div>
 
       {/* Answer Section */}

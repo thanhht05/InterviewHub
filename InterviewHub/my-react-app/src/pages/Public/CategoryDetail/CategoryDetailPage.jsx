@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Typography, Spin, message, Radio, Tag, Empty, Button, theme } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
+import { useSelector } from 'react-redux';
 import { categoryService } from '../../../services/categoryService';
 import { questionService } from '../../../services/questionService';
+import { progressService } from '../../../services/progressService';
 import { useThemeContext } from '../../../contexts/ThemeContext';
 const { Title, Paragraph } = Typography;
 
@@ -13,11 +15,14 @@ const CategoryDetailPage = () => {
   const { isDarkMode } = useThemeContext();
   const { token } = theme.useToken();
 
+  const { isAuthenticated } = useSelector((state) => state.auth);
+
   const [category, setCategory] = useState(null);
   const [questions, setQuestions] = useState([]);
   const [loadingCategory, setLoadingCategory] = useState(true);
   const [loadingQuestions, setLoadingQuestions] = useState(true);
   const [difficulty, setDifficulty] = useState('ALL');
+  const [filterLearned, setFilterLearned] = useState(false);
 
   useEffect(() => {
     fetchCategory();
@@ -25,7 +30,7 @@ const CategoryDetailPage = () => {
 
   useEffect(() => {
     fetchQuestions();
-  }, [id, difficulty]);
+  }, [id, difficulty, filterLearned, isAuthenticated]);
 
   const fetchCategory = async () => {
     setLoadingCategory(true);
@@ -49,12 +54,20 @@ const CategoryDetailPage = () => {
         size: 100, // Fetch up to 100 questions for this category
       };
 
-      if (difficulty !== 'ALL') {
-        params.difficulty = difficulty;
+      if (filterLearned && isAuthenticated) {
+        const response = await progressService.getLearnedQuestionsByCategory(id, params);
+        let learnedQs = response.data.data;
+        if (difficulty !== 'ALL') {
+          learnedQs = learnedQs.filter(q => q.difficulty === difficulty);
+        }
+        setQuestions(learnedQs);
+      } else {
+        if (difficulty !== 'ALL') {
+          params.difficulty = difficulty;
+        }
+        const response = await questionService.getAllQuestions(params);
+        setQuestions(response.data.data);
       }
-
-      const response = await questionService.getAllQuestions(params);
-      setQuestions(response.data.data);
     } catch (error) {
       console.error('Failed to fetch questions:', error);
       message.error('Failed to load questions.');
@@ -107,14 +120,26 @@ const CategoryDetailPage = () => {
       </div>
 
       {/* Filters */}
-      <div style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '16px' }}>
-        <span style={{ fontWeight: 500, color: token.colorText }}>Filter by Difficulty:</span>
-        <Radio.Group value={difficulty} onChange={handleDifficultyChange} buttonStyle="solid">
-          <Radio.Button value="ALL">All</Radio.Button>
-          <Radio.Button value="EASY">Easy</Radio.Button>
-          <Radio.Button value="MEDIUM">Medium</Radio.Button>
-          <Radio.Button value="HARD">Hard</Radio.Button>
-        </Radio.Group>
+      <div style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '24px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <span style={{ fontWeight: 500, color: token.colorText }}>Filter by Difficulty:</span>
+          <Radio.Group value={difficulty} onChange={handleDifficultyChange} buttonStyle="solid">
+            <Radio.Button value="ALL">All</Radio.Button>
+            <Radio.Button value="EASY">Easy</Radio.Button>
+            <Radio.Button value="MEDIUM">Medium</Radio.Button>
+            <Radio.Button value="HARD">Hard</Radio.Button>
+          </Radio.Group>
+        </div>
+        
+        {isAuthenticated && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <span style={{ fontWeight: 500, color: token.colorText }}>Show:</span>
+            <Radio.Group value={filterLearned} onChange={(e) => setFilterLearned(e.target.value)} buttonStyle="solid">
+              <Radio.Button value={false}>All Questions</Radio.Button>
+              <Radio.Button value={true}>Learned Only</Radio.Button>
+            </Radio.Group>
+          </div>
+        )}
       </div>
 
       {/* Question List */}

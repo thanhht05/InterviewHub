@@ -30,4 +30,20 @@ public class ProgressController {
             @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(ApiResponse.success(progressService.getUserProgress(page, size)));
     }
+    @GetMapping("/{questionId}")
+    public ResponseEntity<ApiResponse<UserProgressResponse>> getQuestionProgress(@PathVariable Long questionId) {
+        UserProgressResponse progress = progressService.getQuestionProgress(questionId);
+        if (progress == null) {
+            return ResponseEntity.ok(ApiResponse.success(null)); // Return null or a designated empty response if no progress exists
+        }
+        return ResponseEntity.ok(ApiResponse.success(progress));
+    }
+
+    @GetMapping("/category/{categoryId}/learned")
+    public ResponseEntity<ApiResponse<PaginationDTO<com.InterviewHub.feature.question.dto.QuestionResponse>>> getLearnedQuestionsByCategory(
+            @PathVariable Long categoryId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(ApiResponse.success(progressService.getLearnedQuestionsByCategory(categoryId, page, size)));
+    }
 }

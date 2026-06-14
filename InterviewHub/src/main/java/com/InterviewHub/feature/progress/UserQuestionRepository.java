@@ -11,4 +11,11 @@ import java.util.Optional;
 public interface UserQuestionRepository extends JpaRepository<UserQuestion, UserQuestionId> {
     Page<UserQuestion> findByUserId(Long userId, Pageable pageable);
     Optional<UserQuestion> findByUserIdAndQuestionId(Long userId, Long questionId);
+
+    @org.springframework.data.jpa.repository.Query("SELECT uq.question FROM UserQuestion uq WHERE uq.user.id = :userId AND uq.question.category.id = :categoryId AND uq.status = :status")
+    Page<com.InterviewHub.feature.question.Question> findQuestionsByUserIdAndCategoryIdAndStatus(
+            @org.springframework.data.repository.query.Param("userId") Long userId,
+            @org.springframework.data.repository.query.Param("categoryId") Long categoryId,
+            @org.springframework.data.repository.query.Param("status") QuestionStatus status,
+            Pageable pageable);
 }

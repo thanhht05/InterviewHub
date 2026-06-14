@@ -60,4 +60,20 @@ public class ProgressServiceImpl implements ProgressService {
         Page<UserQuestion> progressPage = userQuestionRepository.findByUserId(user.getId(), PageRequest.of(page, size));
         return PaginationDTO.fromPage(progressPage.map(UserProgressResponse::fromEntity));
     }
+
+    @Override
+    public UserProgressResponse getQuestionProgress(Long questionId) {
+        User user = getCurrentUser();
+        return userQuestionRepository.findByUserIdAndQuestionId(user.getId(), questionId)
+                .map(UserProgressResponse::fromEntity)
+                .orElse(null);
+    }
+
+    @Override
+    public PaginationDTO<com.InterviewHub.feature.question.dto.QuestionResponse> getLearnedQuestionsByCategory(Long categoryId, int page, int size) {
+        User user = getCurrentUser();
+        Page<Question> questionPage = userQuestionRepository.findQuestionsByUserIdAndCategoryIdAndStatus(
+                user.getId(), categoryId, QuestionStatus.MASTERED, PageRequest.of(page, size));
+        return PaginationDTO.fromPage(questionPage.map(com.InterviewHub.feature.question.dto.QuestionResponse::fromEntity));
+    }
 }
