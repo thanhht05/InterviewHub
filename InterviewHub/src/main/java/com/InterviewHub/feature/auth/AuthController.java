@@ -5,6 +5,10 @@ import com.InterviewHub.dto.AuthRequest;
 import com.InterviewHub.dto.AuthResponse;
 import com.InterviewHub.dto.RegisterRequest;
 import com.InterviewHub.feature.user.dto.UserResponse;
+
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,17 +29,25 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<AuthResponse>> register(
-            @RequestBody RegisterRequest request
-    ) {
+            @RequestBody RegisterRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.created(authService.register(request)));
     }
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<AuthResponse>> login(
-            @RequestBody AuthRequest request
-    ) {
-        return ResponseEntity.ok(ApiResponse.success(authService.login(request)));
+            @RequestBody AuthRequest request, HttpServletResponse response)
+
+    {
+        AuthResponse res = authService.login(request);
+        String refreshToken = res.getRefreshToken();
+        Cookie cookie = new Cookie("refreshToken", refreshToken);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setSecure(true);
+        cookie.setMaxAge(7 * 24 * 60 * 60);
+        response.addCookie(cookie);
+        return ResponseEntity.ok(ApiResponse.success(res));
     }
 
     @GetMapping("/account")

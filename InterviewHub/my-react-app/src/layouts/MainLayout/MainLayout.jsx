@@ -1,15 +1,19 @@
 import React from 'react';
-import { Layout, Menu, Button, Space, ConfigProvider, theme, Switch } from 'antd';
+import { Layout, Menu, Button, Space, ConfigProvider, theme, Switch, Dropdown, Avatar } from 'antd';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { MoonOutlined, SunOutlined } from '@ant-design/icons';
+import { MoonOutlined, SunOutlined, UserOutlined, LogoutOutlined } from '@ant-design/icons';
 import { ThemeProvider, useThemeContext } from '../../contexts/ThemeContext';
+import { useSelector, useDispatch } from 'react-redux';
+import { logout } from '../../redux/slices/authSlice';
 
 const { Header, Content, Footer } = Layout;
 
 const MainLayoutContent = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
   const { isDarkMode, toggleTheme } = useThemeContext();
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
   
   const {
     token: { colorBgContainer, colorTextBase, colorBorderSecondary },
@@ -22,6 +26,20 @@ const MainLayoutContent = () => {
   const navItems = [
     { key: '/', label: 'Home' },
     // Add more public links here later
+  ];
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate('/login');
+  };
+
+  const userMenuItems = [
+    {
+      key: 'logout',
+      icon: <LogoutOutlined />,
+      label: 'Logout',
+      onClick: handleLogout,
+    },
   ];
 
   return (
@@ -71,10 +89,19 @@ const MainLayoutContent = () => {
               checkedChildren={<MoonOutlined />} 
               unCheckedChildren={<SunOutlined />} 
             />
-            <Space>
-              <Button type="text" onClick={() => navigate('/login')} style={{ color: colorTextBase }}>Login</Button>
-              <Button type="primary" onClick={() => navigate('/signup')}>Sign Up</Button>
-            </Space>
+            {isAuthenticated ? (
+              <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
+                <Space style={{ cursor: 'pointer' }}>
+                  <Avatar icon={<UserOutlined />} />
+                  <span style={{ color: colorTextBase }}>{user?.username || user?.firstName || 'User'}</span>
+                </Space>
+              </Dropdown>
+            ) : (
+              <Space>
+                <Button type="text" onClick={() => navigate('/login')} style={{ color: colorTextBase }}>Login</Button>
+                <Button type="primary" onClick={() => navigate('/signup')}>Sign Up</Button>
+              </Space>
+            )}
           </Space>
         </Header>
 

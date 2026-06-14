@@ -10,6 +10,8 @@ import MainLayout from '../layouts/MainLayout/MainLayout';
 import HomePage from '../pages/Public/HomePage/HomePage';
 import CategoryDetailPage from '../pages/Public/CategoryDetail/CategoryDetailPage';
 import QuestionDetailPage from '../pages/Public/QuestionDetail/QuestionDetailPage';
+import LoginPage from '../pages/Public/Login/LoginPage';
+import RegisterPage from '../pages/Public/Register/RegisterPage';
 
 const AppRoutes = () => {
   return (
@@ -18,6 +20,8 @@ const AppRoutes = () => {
         <Route index element={<HomePage />} />
         <Route path="categories/:id" element={<CategoryDetailPage />} />
         <Route path="questions/:id" element={<QuestionDetailPage />} />
+        <Route path="login" element={<LoginPage />} />
+        <Route path="signup" element={<RegisterPage />} />
       </Route>
       <Route path="/admin" element={<AdminLayout />}>
         <Route index element={<Navigate to="users" replace />} />
