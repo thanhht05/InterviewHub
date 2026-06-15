@@ -43,20 +43,21 @@ const QuestionDetailPage = () => {
     }
   };
 
-  const handleMarkAsLearned = async () => {
+  const handleToggleLearned = async () => {
     if (!isAuthenticated) {
       message.info('Please log in to track your learning progress.');
       navigate('/login');
       return;
     }
     
+    const newStatus = progressStatus === 'MASTERED' ? 'LEARNING' : 'MASTERED';
     setMarkingProgress(true);
     try {
-      await progressService.markQuestionStatus({ questionId: id, status: 'MASTERED' });
-      setProgressStatus('MASTERED');
-      message.success('Question marked as learned!');
+      await progressService.markQuestionStatus({ questionId: id, status: newStatus });
+      setProgressStatus(newStatus);
+      message.success(newStatus === 'MASTERED' ? 'Question marked as learned!' : 'Question unlearned!');
     } catch (error) {
-      console.error('Failed to mark as learned:', error);
+      console.error('Failed to update progress:', error);
       message.error('Failed to update progress.');
     } finally {
       setMarkingProgress(false);
@@ -145,12 +146,11 @@ const QuestionDetailPage = () => {
             type={progressStatus === 'MASTERED' ? 'default' : 'primary'}
             size="large"
             icon={progressStatus === 'MASTERED' ? <CheckCircleOutlined style={{ color: '#52c41a' }} /> : <CheckOutlined />}
-            onClick={handleMarkAsLearned}
+            onClick={handleToggleLearned}
             loading={markingProgress}
-            disabled={progressStatus === 'MASTERED'}
             style={progressStatus === 'MASTERED' ? { borderColor: '#52c41a', color: '#52c41a' } : { background: '#52c41a' }}
           >
-            {progressStatus === 'MASTERED' ? 'Learned' : 'Mark as Learned'}
+            {progressStatus === 'MASTERED' ? 'Unlearn' : 'Mark as Learned'}
           </Button>
         </Space>
       </div>
