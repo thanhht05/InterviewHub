@@ -7,5 +7,6 @@ import com.InterviewHub.dto.RegisterRequest;
 public interface AuthService {
     AuthResponse register(RegisterRequest request);
     AuthResponse login(AuthRequest request);
+    AuthResponse refreshToken(String refreshToken);
     com.InterviewHub.feature.user.dto.UserResponse getAccount();
 }

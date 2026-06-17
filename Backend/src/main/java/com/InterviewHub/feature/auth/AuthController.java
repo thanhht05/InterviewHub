@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -47,6 +48,25 @@ public class AuthController {
         cookie.setSecure(true);
         cookie.setMaxAge(7 * 24 * 60 * 60);
         response.addCookie(cookie);
+        return ResponseEntity.ok(ApiResponse.success(res));
+    }
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity<ApiResponse<AuthResponse>> refreshToken(
+            @CookieValue(name = "refreshToken", required = false) String refreshToken,
+            HttpServletResponse response) {
+        if (refreshToken == null) {
+            throw new RuntimeException("Refresh token is missing");
+        }
+        AuthResponse res = authService.refreshToken(refreshToken);
+        
+        Cookie cookie = new Cookie("refreshToken", res.getRefreshToken());
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setSecure(true);
+        cookie.setMaxAge(7 * 24 * 60 * 60);
+        response.addCookie(cookie);
+        
         return ResponseEntity.ok(ApiResponse.success(res));
     }
 

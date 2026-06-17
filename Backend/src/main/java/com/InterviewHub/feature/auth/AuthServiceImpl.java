@@ -88,6 +88,24 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    public AuthResponse refreshToken(String refreshToken) {
+        String username = jwtService.extractUsername(refreshToken);
+        if (username != null) {
+            User user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+            
+            if (jwtService.isTokenValid(refreshToken, user) && refreshToken.equals(user.getRefreshToken())) {
+                String accessToken = jwtService.generateToken(user);
+                String newRefreshToken = jwtService.generateRefreshToken(user);
+                user.setRefreshToken(newRefreshToken);
+                userRepository.save(user);
+                return new AuthResponse(accessToken, newRefreshToken, UserResponse.fromEntity(user));
+            }
+        }
+        throw new RuntimeException("Invalid refresh token");
+    }
+
+    @Override
     public UserResponse getAccount() {
         var authentication = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {

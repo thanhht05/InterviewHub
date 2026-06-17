@@ -20,7 +20,6 @@ const LoginPage = () => {
   }, [isAuthenticated, navigate, dispatch]);
 
   const onFinish = (values) => {
-    debugger
     dispatch(loginUser(values));
   };
 
