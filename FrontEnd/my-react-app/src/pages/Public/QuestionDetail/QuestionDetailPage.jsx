@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Typography, Spin, message, Button, Tag, Empty, theme, Space } from 'antd';
+import { Typography, Spin, message, Button, Tag, Empty, theme, Space, Grid } from 'antd';
 import { ArrowLeftOutlined, EyeOutlined, EyeInvisibleOutlined, CheckCircleOutlined, CheckOutlined } from '@ant-design/icons';
 import MarkdownEditor from '@uiw/react-markdown-editor';
 import { useSelector } from 'react-redux';
@@ -10,12 +10,15 @@ import { progressService } from '../../../services/progressService';
 import { useThemeContext } from '../../../contexts/ThemeContext';
 
 const { Title, Paragraph } = Typography;
+const { useBreakpoint } = Grid;
 
 const QuestionDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { isDarkMode } = useThemeContext();
   const { token } = theme.useToken();
+  const screens = useBreakpoint();
+  const isMobile = screens.md === false;
 
   const { isAuthenticated } = useSelector((state) => state.auth);
 
@@ -106,7 +109,7 @@ const QuestionDetailPage = () => {
   }
 
   return (
-    <div style={{ minHeight: 'calc(100vh - 64px - 70px)', maxWidth: '1200px', margin: '0 auto' }}>
+    <div style={{ minHeight: 'calc(100vh - 64px - 70px)', maxWidth: '1200px', margin: '0 auto', padding: isMobile ? '16px' : '20px 40px' }}>
 
       {/* Back Button */}
       <Button
@@ -119,8 +122,8 @@ const QuestionDetailPage = () => {
       </Button>
 
       {/* Header */}
-      <div style={{ marginBottom: '32px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
-        <Title level={2} style={{ color: token.colorPrimary, margin: 0, flex: 1, minWidth: '300px' }}>
+      <div style={{ marginBottom: '32px', display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'flex-start' : 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
+        <Title level={isMobile ? 3 : 2} style={{ color: token.colorPrimary, margin: 0, flex: 1, minWidth: isMobile ? 'auto' : '300px' }}>
           {question.title}
         </Title>
         <Tag color={getDifficultyColor(question.difficulty)} style={{ fontSize: '1rem', padding: '4px 12px' }}>
@@ -132,10 +135,11 @@ const QuestionDetailPage = () => {
 
       {/* Action Area */}
       <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-        <Space size="large">
+        <Space size={isMobile ? 'middle' : 'large'} direction={isMobile ? 'vertical' : 'horizontal'} style={{ width: isMobile ? '100%' : 'auto' }}>
           <Button
             type="primary"
             size="large"
+            block={isMobile}
             icon={showAnswer ? <EyeInvisibleOutlined /> : <EyeOutlined />}
             onClick={() => setShowAnswer(!showAnswer)}
           >
@@ -145,6 +149,7 @@ const QuestionDetailPage = () => {
           <Button
             type={progressStatus === 'MASTERED' ? 'default' : 'primary'}
             size="large"
+            block={isMobile}
             icon={progressStatus === 'MASTERED' ? <CheckCircleOutlined style={{ color: '#52c41a' }} /> : <CheckOutlined />}
             onClick={handleToggleLearned}
             loading={markingProgress}
@@ -162,7 +167,7 @@ const QuestionDetailPage = () => {
           className="markdown-preview"
           style={{
             border: `1px solid ${token.colorBorderSecondary}`,
-            padding: '24px',
+            padding: isMobile ? '16px' : '24px',
             borderRadius: '8px',
             background: token.colorBgContainer
           }}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Typography, Spin, message, Radio, Tag, Empty, Button, theme } from 'antd';
+import { Typography, Spin, message, Radio, Tag, Empty, Button, theme, Grid } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useSelector } from 'react-redux';
 import { categoryService } from '../../../services/categoryService';
@@ -8,12 +8,15 @@ import { questionService } from '../../../services/questionService';
 import { progressService } from '../../../services/progressService';
 import { useThemeContext } from '../../../contexts/ThemeContext';
 const { Title, Paragraph } = Typography;
+const { useBreakpoint } = Grid;
 
 const CategoryDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { isDarkMode } = useThemeContext();
   const { token } = theme.useToken();
+  const screens = useBreakpoint();
+  const isMobile = screens.md === false;
 
   const { isAuthenticated } = useSelector((state) => state.auth);
 
@@ -109,7 +112,7 @@ const CategoryDetailPage = () => {
   }
 
   return (
-    <div style={{ minHeight: 'calc(100vh - 64px - 70px)', padding: '20px 20px', maxWidth: '1200px', margin: '0 auto' }}>
+    <div style={{ minHeight: 'calc(100vh - 64px - 70px)', padding: isMobile ? '16px 16px' : '20px 20px', maxWidth: '1200px', margin: '0 auto' }}>
 
       {/* Header */}
       <div style={{ marginBottom: '40px' }}>
@@ -120,8 +123,8 @@ const CategoryDetailPage = () => {
       </div>
 
       {/* Filters */}
-      <div style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '24px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+      <div style={{ marginBottom: '24px', display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'flex-start' : 'center', flexWrap: 'wrap', gap: isMobile ? '16px' : '24px' }}>
+        <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'flex-start' : 'center', gap: isMobile ? '8px' : '16px' }}>
           <span style={{ fontWeight: 500, color: token.colorText }}>Filter by Difficulty:</span>
           <Radio.Group value={difficulty} onChange={handleDifficultyChange} buttonStyle="solid">
             <Radio.Button value="ALL">All</Radio.Button>
@@ -132,7 +135,7 @@ const CategoryDetailPage = () => {
         </div>
         
         {isAuthenticated && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'flex-start' : 'center', gap: isMobile ? '8px' : '16px' }}>
             <span style={{ fontWeight: 500, color: token.colorText }}>Show:</span>
             <Radio.Group value={filterLearned} onChange={(e) => setFilterLearned(e.target.value)} buttonStyle="solid">
               <Radio.Button value={false}>All Questions</Radio.Button>
@@ -155,10 +158,12 @@ const CategoryDetailPage = () => {
             <div 
               key={question.id}
               style={{
-                padding: '16px 24px',
+                padding: isMobile ? '12px 16px' : '16px 24px',
                 display: 'flex', 
+                flexDirection: isMobile ? 'column' : 'row',
                 justifyContent: 'space-between', 
-                alignItems: 'center',
+                alignItems: isMobile ? 'flex-start' : 'center',
+                gap: isMobile ? '8px' : '0',
                 borderBottom: index < questions.length - 1 ? `1px solid ${token.colorBorderSecondary}` : 'none',
                 cursor: 'pointer',
                 transition: 'background 0.3s'

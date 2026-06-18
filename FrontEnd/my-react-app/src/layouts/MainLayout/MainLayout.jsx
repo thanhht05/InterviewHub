@@ -1,12 +1,13 @@
-import React from 'react';
-import { Layout, Menu, Button, Space, ConfigProvider, theme, Switch, Dropdown, Avatar } from 'antd';
+import React, { useState } from 'react';
+import { Layout, Menu, Button, Space, ConfigProvider, theme, Switch, Dropdown, Avatar, Grid, Drawer } from 'antd';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { MoonOutlined, SunOutlined, UserOutlined, LogoutOutlined } from '@ant-design/icons';
+import { MoonOutlined, SunOutlined, UserOutlined, LogoutOutlined, MenuOutlined } from '@ant-design/icons';
 import { ThemeProvider, useThemeContext } from '../../contexts/ThemeContext';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../../redux/slices/authSlice';
 
 const { Header, Content, Footer } = Layout;
+const { useBreakpoint } = Grid;
 
 const MainLayoutContent = () => {
   const navigate = useNavigate();
@@ -14,12 +15,16 @@ const MainLayoutContent = () => {
   const dispatch = useDispatch();
   const { isDarkMode, toggleTheme } = useThemeContext();
   const { isAuthenticated, user } = useSelector((state) => state.auth);
+  const screens = useBreakpoint();
+  const isMobile = screens.md === false;
+  const [drawerVisible, setDrawerVisible] = useState(false);
   
   const {
     token: { colorBgContainer, colorTextBase, colorBorderSecondary },
   } = theme.useToken();
 
   const handleMenuClick = ({ key }) => {
+    setDrawerVisible(false);
     navigate(key);
   };
 
@@ -29,6 +34,7 @@ const MainLayoutContent = () => {
   ];
 
   const handleLogout = () => {
+    setDrawerVisible(false);
     dispatch(logout());
     navigate('/login');
   };
@@ -55,7 +61,7 @@ const MainLayoutContent = () => {
           alignItems: 'center', 
           justifyContent: 'space-between',
           background: colorBgContainer, 
-          padding: '0 50px',
+          padding: isMobile ? '0 16px' : '0 50px',
           borderBottom: `1px solid ${colorBorderSecondary}`,
           position: 'sticky',
           top: 0,
@@ -74,13 +80,15 @@ const MainLayoutContent = () => {
             InterviewHub
           </div>
           
-          <Menu
-            mode="horizontal"
-            selectedKeys={[location.pathname]}
-            items={navItems}
-            onClick={handleMenuClick}
-            style={{ flex: 1, justifyContent: 'center', borderBottom: 'none', background: 'transparent' }}
-          />
+          {!isMobile && (
+            <Menu
+              mode="horizontal"
+              selectedKeys={[location.pathname]}
+              items={navItems}
+              onClick={handleMenuClick}
+              style={{ flex: 1, justifyContent: 'center', borderBottom: 'none', background: 'transparent' }}
+            />
+          )}
           
           <Space size="large">
             <Switch 
@@ -89,21 +97,64 @@ const MainLayoutContent = () => {
               checkedChildren={<MoonOutlined />} 
               unCheckedChildren={<SunOutlined />} 
             />
-            {isAuthenticated ? (
-              <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
-                <Space style={{ cursor: 'pointer' }}>
-                  <Avatar icon={<UserOutlined />} />
-                  <span style={{ color: colorTextBase }}>{user?.username || user?.firstName || 'User'}</span>
+            {!isMobile && (
+              isAuthenticated ? (
+                <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
+                  <Space style={{ cursor: 'pointer' }}>
+                    <Avatar icon={<UserOutlined />} />
+                    <span style={{ color: colorTextBase }}>{user?.username || user?.firstName || 'User'}</span>
+                  </Space>
+                </Dropdown>
+              ) : (
+                <Space>
+                  <Button type="text" onClick={() => navigate('/login')} style={{ color: colorTextBase }}>Login</Button>
+                  <Button type="primary" onClick={() => navigate('/signup')}>Sign Up</Button>
                 </Space>
-              </Dropdown>
-            ) : (
-              <Space>
-                <Button type="text" onClick={() => navigate('/login')} style={{ color: colorTextBase }}>Login</Button>
-                <Button type="primary" onClick={() => navigate('/signup')}>Sign Up</Button>
-              </Space>
+              )
+            )}
+            {isMobile && (
+              <Button 
+                type="text" 
+                icon={<MenuOutlined style={{ fontSize: '20px', color: colorTextBase }} />} 
+                onClick={() => setDrawerVisible(true)} 
+              />
             )}
           </Space>
         </Header>
+
+        <Drawer
+          title="Menu"
+          placement="right"
+          onClose={() => setDrawerVisible(false)}
+          open={drawerVisible}
+          styles={{ body: { padding: 0 } }}
+        >
+          <Menu
+            mode="inline"
+            selectedKeys={[location.pathname]}
+            items={navItems}
+            onClick={handleMenuClick}
+            style={{ borderRight: 'none' }}
+          />
+          <div style={{ padding: '16px', borderTop: `1px solid ${colorBorderSecondary}` }}>
+            {isAuthenticated ? (
+              <Space direction="vertical" style={{ width: '100%' }} size="middle">
+                <Space>
+                  <Avatar icon={<UserOutlined />} />
+                  <span style={{ color: colorTextBase }}>{user?.username || user?.firstName || 'User'}</span>
+                </Space>
+                <Button danger block onClick={handleLogout} icon={<LogoutOutlined />}>
+                  Logout
+                </Button>
+              </Space>
+            ) : (
+              <Space direction="vertical" style={{ width: '100%' }}>
+                <Button block onClick={() => { setDrawerVisible(false); navigate('/login'); }}>Login</Button>
+                <Button type="primary" block onClick={() => { setDrawerVisible(false); navigate('/signup'); }}>Sign Up</Button>
+              </Space>
+            )}
+          </div>
+        </Drawer>
 
         <Content style={{ background: colorBgContainer, color: colorTextBase }}>
           <Outlet />

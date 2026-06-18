@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Typography, Button, Row, Col, Card, Spin, message, theme } from 'antd';
+import { Typography, Button, Row, Col, Card, Spin, message, theme, Grid } from 'antd';
 import { ArrowRightOutlined, BookOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { categoryService } from '../../../services/categoryService';
 import { useThemeContext } from '../../../contexts/ThemeContext';
 
 const { Title, Paragraph } = Typography;
+const { useBreakpoint } = Grid;
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -13,6 +14,8 @@ const HomePage = () => {
   const [loading, setLoading] = useState(true);
   const { isDarkMode } = useThemeContext();
   const { token } = theme.useToken();
+  const screens = useBreakpoint();
+  const isMobile = screens.md === false;
 
   useEffect(() => {
     fetchCategories();
@@ -40,10 +43,10 @@ const HomePage = () => {
       {/* Hero Section */}
       <div style={{ 
         background: heroBackground, 
-        padding: '80px 50px', 
+        padding: isMobile ? '40px 16px' : '80px 50px', 
         textAlign: 'center' 
       }}>
-        <Title style={{ fontSize: '3rem', marginBottom: '24px', color: token.colorPrimary }}>
+        <Title style={{ fontSize: isMobile ? '2rem' : '3rem', marginBottom: '24px', color: token.colorPrimary }}>
           Master Your Next Interview
         </Title>
         <Paragraph style={{ fontSize: '1.2rem', maxWidth: '600px', margin: '0 auto 40px auto', color: token.colorTextSecondary }}>
@@ -63,7 +66,7 @@ const HomePage = () => {
       </div>
 
       {/* Categories Section */}
-      <div id="categories-section" style={{ padding: '60px 50px', maxWidth: '1200px', margin: '0 auto' }}>
+      <div id="categories-section" style={{ padding: isMobile ? '40px 16px' : '60px 50px', maxWidth: '1200px', margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: '40px' }}>
           <Title level={2}>Explore Categories</Title>
           <Paragraph type="secondary">Choose a topic to start practicing questions.</Paragraph>
