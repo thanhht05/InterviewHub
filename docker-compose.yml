@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  # 1. Database Service
+  mysql-db:
+    image: mysql:8.0
+    container_name: mysql-container
+    environment:
+      MYSQL_ROOT_PASSWORD: 'interviewhub' # Đổi thành pass của bạn
+      MYSQL_DATABASE: 'interviewhub'          # Tên database bạn muốn tạo
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - interview-network
+
+  # 2. Backend Service (Spring Boot 21)
+  backend-api:
+    build: ./Backend # Chữ B viết hoa theo đúng cấu trúc thư mục của bạn
+    container_name: backend-container
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql-db
+    networks:
+      - interview-network
+
+  # 3. Frontend Service (React Vite + Nginx)
+  frontend-ui:
+    build: ./FrontEnd # Chữ F và E viết hoa theo đúng cấu trúc thư mục của bạn
+    container_name: frontend-container
+    ports:
+      - "80:80"
+    depends_on:
+      - backend-api
+    networks:
+      - interview-network
+
+networks:
+  interview-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
