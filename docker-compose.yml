@@ -20,7 +20,7 @@ services:
     build: ./Backend # Chữ B viết hoa theo đúng cấu trúc thư mục của bạn
     container_name: backend-container
     ports:
-      - "8080:8080"
+      - "8081:8081"
     depends_on:
       - mysql-db
     networks:

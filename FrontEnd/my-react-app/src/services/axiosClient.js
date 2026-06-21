@@ -1,9 +1,9 @@
 import axios from 'axios';
 
 const axiosClient = axios.create({
-  baseURL: `${import.meta.env.VITE_BACKEND_URL}/api/v1`,
+  baseURL: "/api/v1",
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
   withCredentials: true,
 });
@@ -33,7 +33,7 @@ const processQueue = (error, token = null) => {
       prom.resolve(token);
     }
   });
-  
+
   failedQueue = [];
 };
 
@@ -44,12 +44,12 @@ axiosClient.interceptors.response.use(
   },
   async function (error) {
     const originalRequest = error.config;
-    
+
     // Check if error is 401 and the request hasn't been retried yet
     if (error.response && error.response.status === 401 && !originalRequest._retry && originalRequest.url !== '/auth/login' && originalRequest.url !== '/auth/refresh-token') {
       if (isRefreshing) {
-        return new Promise(function(resolve, reject) {
-          failedQueue.push({resolve, reject})
+        return new Promise(function (resolve, reject) {
+          failedQueue.push({ resolve, reject })
         }).then(token => {
           originalRequest.headers['Authorization'] = 'Bearer ' + token;
           return axiosClient(originalRequest);
@@ -60,21 +60,21 @@ axiosClient.interceptors.response.use(
 
       originalRequest._retry = true;
       isRefreshing = true;
-      
+
       try {
         const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/auth/refresh-token`, {}, {
           withCredentials: true
         });
-        
+
         const newAccessToken = res.data.data.accessToken;
         localStorage.setItem('accessToken', newAccessToken);
-        
+
         axiosClient.defaults.headers.common['Authorization'] = 'Bearer ' + newAccessToken;
         originalRequest.headers['Authorization'] = 'Bearer ' + newAccessToken;
-        
+
         processQueue(null, newAccessToken);
         isRefreshing = false;
-        
+
         return axiosClient(originalRequest);
       } catch (err) {
         processQueue(err, null);
@@ -83,7 +83,7 @@ axiosClient.interceptors.response.use(
         return Promise.reject(err);
       }
     }
-    
+
     return Promise.reject(error);
   }
 );
