@@ -62,9 +62,13 @@ axiosClient.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/v1/auth/refresh-token`, {}, {
-          withCredentials: true
-        });
+        const res = await axiosClient.post(
+          "/auth/refresh-token",
+          {},
+          {
+            withCredentials: true
+          }
+        );
 
         const newAccessToken = res.data.data.accessToken;
         localStorage.setItem('accessToken', newAccessToken);
