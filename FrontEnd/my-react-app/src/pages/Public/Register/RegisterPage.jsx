@@ -33,7 +33,7 @@ const RegisterPage = () => {
         <div style={{ textAlign: 'center', marginBottom: '24px' }}>
           <Title level={2}>Sign Up</Title>
         </div>
-        
+
         {error && (
           <Alert message={error} type="error" showIcon style={{ marginBottom: 24 }} />
         )}
@@ -45,17 +45,17 @@ const RegisterPage = () => {
           size="large"
         >
           <Form.Item
-            name="firstName"
-            rules={[{ required: true, message: 'Please input your first name!' }]}
+            name="username"
+            rules={[{ required: true, message: 'Please input your username!' }]}
           >
-            <Input prefix={<UserOutlined />} placeholder="First Name" />
+            <Input prefix={<UserOutlined />} placeholder="Username" />
           </Form.Item>
 
           <Form.Item
-            name="lastName"
-            rules={[{ required: true, message: 'Please input your last name!' }]}
+            name="name"
+            rules={[{ required: true, message: 'Please input your full name!' }]}
           >
-            <Input prefix={<UserOutlined />} placeholder="Last Name" />
+            <Input prefix={<UserOutlined />} placeholder="Full Name" />
           </Form.Item>
 
           <Form.Item
