@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Space, Popconfirm, message, Typography, Card, Tag } from 'antd';
+import { Table, Button, Space, Popconfirm, message, Typography, Card, Tag, Input } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import QuestionModal from './components/QuestionModal';
 import { questionService } from '../../../services/questionService';
 
 const { Title } = Typography;
+const { Search } = Input;
 
 const QuestionManagement = () => {
   const [questions, setQuestions] = useState([]);
@@ -12,11 +13,12 @@ const QuestionManagement = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState(null);
   const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 });
+  const [searchText, setSearchText] = useState('');
 
-  const fetchQuestions = async (page = pagination.current, size = pagination.pageSize) => {
+  const fetchQuestions = async (page = pagination.current, size = pagination.pageSize, search = searchText) => {
     setLoading(true);
     try {
-      const response = await questionService.getAllQuestions({ page: page - 1, size });
+      const response = await questionService.getAllQuestions({ page: page - 1, size, title: search });
       setQuestions(response.data.data);
       setPagination(prev => ({ ...prev, current: page, pageSize: size, total: response.data.totalElements }));
     } catch (error) {
@@ -28,6 +30,12 @@ const QuestionManagement = () => {
 
   const handleTableChange = (newPagination) => {
     fetchQuestions(newPagination.current, newPagination.pageSize);
+  };
+
+  const onSearch = (value) => {
+    setSearchText(value);
+    setPagination(prev => ({ ...prev, current: 1 }));
+    fetchQuestions(1, pagination.pageSize, value);
   };
 
   useEffect(() => {
@@ -128,9 +136,17 @@ const QuestionManagement = () => {
     <Card bordered={false}>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
         <Title level={3} style={{ margin: 0 }}>Question Management</Title>
-        <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
-          Add Question
-        </Button>
+        <Space>
+          <Search
+            placeholder="Tìm kiếm theo tên câu hỏi"
+            allowClear
+            onSearch={onSearch}
+            style={{ width: 250 }}
+          />
+          <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
+            Add Question
+          </Button>
+        </Space>
       </div>
       <Table
         columns={columns}
