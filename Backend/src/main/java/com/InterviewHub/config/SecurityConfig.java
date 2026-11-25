@@ -64,11 +64,8 @@ public class SecurityConfig {
 
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // Các frontend được phép gọi API
-        configuration.setAllowedOrigins(List.of(
-                "http://localhost:5173",
-                "https://thanhinterview.click",
-                "https://www.thanhinterview.click"));
+        // Cho phép tất cả các domain/origin (bao gồm interview.my-demo.id.vn, localhost, v.v.)
+        configuration.setAllowedOriginPatterns(List.of("*"));
 
         // Các HTTP methods được phép
         configuration.setAllowedMethods(List.of(
@@ -77,13 +74,20 @@ public class SecurityConfig {
                 "PUT",
                 "DELETE",
                 "PATCH",
-                "OPTIONS"));
+                "OPTIONS",
+                "HEAD"));
 
         // Cho phép các request headers
         configuration.setAllowedHeaders(List.of("*"));
 
+        // Cho phép các response headers cho frontend
+        configuration.setExposedHeaders(List.of("*"));
+
         // Cho phép gửi Cookie / Authorization credentials
         configuration.setAllowCredentials(true);
+
+        // Cache preflight trong 1 giờ
+        configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 

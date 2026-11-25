@@ -17,7 +17,7 @@ WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 
 # Mở cổng 8080 cho Backend
-EXPOSE 8081
+EXPOSE 8082
 
 # Lệnh khởi chạy ứng dụng
 ENTRYPOINT ["java", "-jar", "app.jar"]
